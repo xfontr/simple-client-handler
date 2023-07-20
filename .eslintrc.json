@@ -15,5 +15,8 @@
     }
   ],
   "ignorePatterns": ["build"],
-  "root": true
+  "root": true,
+  "rules": {
+    "object-shorthand": "off"
+  }
 }
