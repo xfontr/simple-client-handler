@@ -17,6 +17,7 @@
   "ignorePatterns": ["build"],
   "root": true,
   "rules": {
-    "object-shorthand": "off"
+    "object-shorthand": "off",
+    "@typescript-eslint/ban-types": "off"
   }
 }
