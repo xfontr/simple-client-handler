@@ -13,6 +13,7 @@ const $t = i18n({
     loggerTool: logger("I18n").warn,
     verbosity: ["CRITIC", "LIGHT", "SUCCESS"],
   },
+  plugins: [],
 }).useI18n();
 
 export default $t;
