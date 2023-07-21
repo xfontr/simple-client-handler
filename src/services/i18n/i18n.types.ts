@@ -1,3 +1,5 @@
+import { type CustomFunction } from "../../types/Functions";
+
 export type Locale = `${Uppercase<string>}-${Lowercase<string>}`;
 export type Locales = Readonly<Locale[]>;
 
@@ -61,6 +63,12 @@ export type I18nOptions = Partial<{
   anyFallback: boolean;
   route: string;
   log: PublicLogOptions;
+  /**
+   * List of functions that will be executed once the store has been initialized, with have access to the unfrozen store.
+   *
+   * @example [({ translations }) => { console.log(`See the translations: ${translations}`) }]
+   */
+  plugins: Array<(store: I18nStore) => void>;
 }>;
 
 export type I18nStore = Required<

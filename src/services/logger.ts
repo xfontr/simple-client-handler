@@ -16,12 +16,12 @@ const baseLogger = pino<AllowedLevels>({
 
 const customLogger =
   <T extends object>(method: keyof T, item: T) =>
-  (index?: Capitalize<string>) =>
+  (index?: string) =>
   (message: string): void => {
     item[method](index ? `${index} | ${message}` : message);
   };
 
-const logger = (index?: Capitalize<string>) =>
+const logger = (index?: string) =>
   replaceMethods(baseLogger, levels, customLogger, index);
 
 export default logger;

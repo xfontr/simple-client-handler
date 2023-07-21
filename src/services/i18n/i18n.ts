@@ -34,6 +34,7 @@ const i18n = (options: I18nOptions = {}) => {
       fallbackLocale ?? DEFAULT_LOCALE,
     ),
     translations: {},
+    plugins: [],
     ...options,
     log: {
       logger: i18nLogger(logOptions),
@@ -63,9 +64,17 @@ const i18n = (options: I18nOptions = {}) => {
     hasBeenInitialized = true;
     store.translations = JSON.parse(file!) as Record<string, any>;
 
+    executePlugins();
+
     Object.freeze(store);
 
     return { useI18n };
+  };
+
+  const executePlugins = () => {
+    store.plugins.forEach((plugin) => {
+      plugin(store);
+    });
   };
 
   const useI18n = () => {
