@@ -1,8 +1,10 @@
 import internalI18n from "./i18n.locales";
 import type {
+  I18nInstance,
   I18nOptions,
   I18nStore,
   Locale,
+  Plugin,
   PublicLogOptions,
 } from "./i18n.types";
 import { i18nLogger, loadTranslations, requiredLocale } from "./i18n.utils";
@@ -10,9 +12,11 @@ import { i18nLogger, loadTranslations, requiredLocale } from "./i18n.utils";
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const DEFAULT_LOCALE: Locale = "GB-en";
 
-let hasBeenInitialized = false;
+let isInitialized = false;
 
-const i18n = (options: I18nOptions = {}) => {
+const i18n = <T extends string | number | symbol>(
+  options: I18nOptions = {},
+): I18nInstance<T> => {
   const { locale, allowedLocales, fallbackLocale } = options;
 
   const logOptions: Required<PublicLogOptions> = {
@@ -34,6 +38,7 @@ const i18n = (options: I18nOptions = {}) => {
       fallbackLocale ?? DEFAULT_LOCALE,
     ),
     translations: {},
+    beforeAll: undefined,
     plugins: [],
     ...options,
     log: {
@@ -48,8 +53,12 @@ const i18n = (options: I18nOptions = {}) => {
 
   const log = store.log.logger;
 
+  if (isInitialized) {
+    throw new Error($t.initializedError);
+  }
+
   const init = () => {
-    if (hasBeenInitialized) {
+    if (isInitialized) {
       throw new Error($t.initializedError);
     }
 
@@ -61,28 +70,22 @@ const i18n = (options: I18nOptions = {}) => {
 
     log($t.initSuccess(), "SUCCESS");
 
-    hasBeenInitialized = true;
+    isInitialized = true;
     store.translations = JSON.parse(file!) as Record<string, any>;
 
-    executePlugins();
+    store.beforeAll?.(store);
 
     Object.freeze(store);
 
-    return { useI18n };
-  };
-
-  const executePlugins = () => {
-    store.plugins.forEach((plugin) => {
-      plugin(store);
-    });
+    return { useI18n, plugins };
   };
 
   const useI18n = () => {
-    if (!hasBeenInitialized && !store.autoInit) {
+    if (!isInitialized && !store.autoInit) {
       throw new Error($t.notInitializedError);
     }
 
-    if (!hasBeenInitialized) {
+    if (!isInitialized) {
       init();
     }
 
@@ -110,7 +113,22 @@ const i18n = (options: I18nOptions = {}) => {
     };
   };
 
-  return { init, useI18n };
+  const plugins = () => {
+    if (!isInitialized) {
+      throw new Error($t.notInitializedError);
+    }
+
+    return store.plugins.reduce(
+      (allPlugins, plugin) => ({
+        ...allPlugins,
+        [plugin.name as T]: plugin(store),
+      }),
+      // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter
+      {} as Record<T, Plugin>,
+    );
+  };
+
+  return { init, useI18n, plugins };
 };
 
 export default i18n;

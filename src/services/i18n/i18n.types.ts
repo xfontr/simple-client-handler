@@ -2,12 +2,13 @@ import { type CustomFunction } from "../../types/Functions";
 
 export type Locale = `${Uppercase<string>}-${Lowercase<string>}`;
 export type Locales = Readonly<Locale[]>;
-
 export type VerbosityLevels = "CRITIC" | "LIGHT" | "SUCCESS" | "MESSAGE";
 
 export type I18nLogger = (
   options: Required<PublicLogOptions>,
 ) => ((message: string, level: VerbosityLevels) => void) | (() => void);
+
+export type Plugin = CustomFunction<(store: I18nStore) => unknown>;
 
 export type LogOptions = Partial<{
   /**
@@ -64,11 +65,17 @@ export type I18nOptions = Partial<{
   route: string;
   log: PublicLogOptions;
   /**
-   * List of functions that will be executed once the store has been initialized, with have access to the unfrozen store.
+   * Function that will be executed once the store has been initialized, with access to the unfrozen store.
    *
-   * @example [({ translations }) => { console.log(`See the translations: ${translations}`) }]
+   * @example ({ translations }) => { console.log(`See the translations: ${translations}`) }
    */
-  plugins: Array<(store: I18nStore) => void>;
+  beforeAll: ((store: I18nStore) => void) | undefined;
+  /**
+   * List of functions that will be returned by the i18n tool itself, for the user to call whenever it requires it..
+   *
+   * @example [({ translations }) => { console.log(`See the translations: ${translations}`) }, ...plugins]
+   */
+  plugins: Plugin[];
 }>;
 
 export type I18nStore = Required<
@@ -78,3 +85,12 @@ export type I18nStore = Required<
       log: Required<LogOptions>;
     }
 >;
+
+export type I18nInstance<T extends string | number | symbol> = {
+  useI18n: () => (key: string) => string;
+  init: () => {
+    useI18n: () => (key: string) => string;
+    plugins: () => Record<T, Plugin>;
+  };
+  plugins: () => Record<T, Plugin>;
+};
