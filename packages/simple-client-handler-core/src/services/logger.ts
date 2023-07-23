@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { pino } from "pino";
-import { replaceMethods } from "../utils/methodReplacer";
+import { replaceMethods } from "@personal/utils";
 
 type Levels = "info" | "debug" | "trace" | "fatal" | "error" | "warn";
 
