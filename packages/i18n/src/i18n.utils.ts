@@ -1,13 +1,13 @@
 import { readFileSync, readdirSync } from "fs";
 import { join, extname } from "path";
 import type {
+  CustomFunction,
   I18nLogger,
   I18nStore,
   Locale,
   Locales,
   VerbosityLevels,
 } from "./i18n.types";
-import { type CustomFunction } from "../../types/Functions";
 import internalI18n from "./i18n.locales";
 
 export const syncTryCatch = <

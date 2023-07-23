@@ -1,5 +1,5 @@
+import { i18n } from "@personal/i18n";
 import { LOCALES } from "./configs/constants";
-import i18n from "./services/i18n/i18n";
 import logger from "./services/logger";
 
 const $t = i18n({

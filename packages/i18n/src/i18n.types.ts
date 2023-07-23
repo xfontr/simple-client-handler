@@ -1,5 +1,5 @@
-import { type CustomFunction } from "../../types/Functions";
-
+export type CustomFunction<T = any> = (...args: any[]) => T;
+export type PromiseFunction<T = any> = CustomFunction<Promise<T>>;
 export type Locale = `${Uppercase<string>}-${Lowercase<string>}`;
 export type Locales = Readonly<Locale[]>;
 export type VerbosityLevels = "CRITIC" | "LIGHT" | "SUCCESS" | "MESSAGE";
