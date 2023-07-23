@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { type CustomFunction } from "../types/Functions";
 
-export const replaceMethods = <T extends object, M extends CustomFunction>(
+const replaceMethods = <T extends object, M extends CustomFunction>(
   methodContainer: T,
   methods: Array<keyof T>,
   customMethod: M,
@@ -15,3 +15,5 @@ export const replaceMethods = <T extends object, M extends CustomFunction>(
     }),
     {},
   ) as T;
+
+export default replaceMethods;
