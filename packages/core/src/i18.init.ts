@@ -1,4 +1,4 @@
-import i18n from "@personal/i18n/src/i18n";
+import { i18n } from "@personal/i18n";
 import { LOCALES } from "./configs/constants";
 import logger from "./services/logger";
 

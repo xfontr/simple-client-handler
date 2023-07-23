@@ -10,18 +10,18 @@ import type {
   PublicLogOptions as I18nLogOptions,
 } from "./src/i18n.types";
 
-import * as i18n from "./src/i18n";
+import i18n from "./src/i18n";
 
-export type {
-  I18nInstance,
-  I18nLogger,
-  I18nOptions,
-  I18nStore,
-  I18nLocale,
-  I18nLocales,
-  I18nPlugin,
-  I18nVerbosityLevels,
-  I18nLogOptions,
+export {
+  type I18nInstance,
+  type I18nLogger,
+  type I18nOptions,
+  type I18nStore,
+  type I18nLocale,
+  type I18nLocales,
+  type I18nPlugin,
+  type I18nVerbosityLevels,
+  type I18nLogOptions,
 };
 
-export { i18n };
+export default i18n;
