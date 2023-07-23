@@ -1,5 +1,5 @@
-import replaceMethods from "./src/utils/methodReplacer";
-import tryCatch from "./src/utils/tryCatch";
+import replaceMethods from "./src/methodReplacer";
+import tryCatch from "./src/tryCatch";
 import {
   type CustomFunction,
   type PromiseFunction,
