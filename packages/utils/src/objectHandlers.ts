@@ -8,3 +8,5 @@ export const objectEntries = <T extends object>(
   item: T,
 ): Array<[keyof T, T[keyof T]]> =>
   Object.entries(item) as Array<[keyof T, T[keyof T]]>;
+
+export const objectFreeze = <T extends object>(item: T) => Object.freeze(item);
