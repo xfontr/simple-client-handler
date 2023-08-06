@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node .",
-    "build": "npm ci && rimraf build && tsc && npm pack",
+    "build": "npm ci && rimraf build && tsc *.ts && tsc && npm pack",
     "dev": "clear && nodemon -q --watch src --exec node --loader ts-node/esm --inspect src/index.ts | npm run pretty-log",
     "dev:verbose": "clear && nodemon --watch src --exec node --loader ts-node/esm --inspect src/index.ts",
     "lint": "eslint \"**/*.{ts}\"",

@@ -1,4 +1,4 @@
-import { i18n } from "@personal/i18n";
+import i18n from "@personal/i18n";
 import { LOCALES } from "./configs/constants";
 import logger from "./services/logger";
 
@@ -8,6 +8,7 @@ const $t = i18n({
   anyFallback: true,
   autoInit: true,
   allowedLocales: LOCALES,
+  route: [__dirname, "./locales"],
   log: {
     enabled: true,
     loggerTool: logger("I18n").warn,
