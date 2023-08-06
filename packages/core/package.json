@@ -21,7 +21,7 @@
     "@types/jest": "^29.5.3",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
-    "@personal/i18n": "file:../i18n/personal-i18n-0.0.3-rc.5.tgz",
+    "@personal/i18n": "file:../i18n/personal-i18n-0.0.4.tgz",
     "@personal/utils": "file:../utils/personal-utils-0.0.2.tgz",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
