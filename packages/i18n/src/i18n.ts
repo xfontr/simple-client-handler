@@ -1,57 +1,20 @@
 import internalI18n from "./i18n.locales";
-import type {
-  I18nInstance,
-  I18nOptions,
-  I18nStore,
-  Locale,
-  Plugin,
-  PublicLogOptions,
-} from "./i18n.types";
-import { i18nLogger, loadTranslations, requiredLocale } from "./i18n.utils";
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const DEFAULT_LOCALE: Locale = "GB-en";
+import type { I18nInstance, I18nOptions, Plugin } from "./i18n.types";
+import {
+  createI18nStore,
+  executeBeforeAll,
+  functionProxy,
+  loadTranslations,
+} from "./i18n.utils";
 
 let isInitialized = false;
 
 const i18n = <T extends string | number | symbol>(
   options: I18nOptions = {},
 ): I18nInstance<T> => {
-  const { locale, allowedLocales, fallbackLocale } = options;
-
-  const logOptions: Required<PublicLogOptions> = {
-    enabled: true,
-    verbosity: "ALL",
-    loggerTool: console.warn,
-    ...options.log,
-  };
-
-  const store: I18nStore = {
-    autoInit: false,
-    allowedLocales: [DEFAULT_LOCALE],
-    fallbackLocale: DEFAULT_LOCALE,
-    anyFallback: false,
-    route: "../../locales",
-    locale: requiredLocale(
-      locale ?? DEFAULT_LOCALE,
-      allowedLocales ?? [DEFAULT_LOCALE],
-      fallbackLocale ?? DEFAULT_LOCALE,
-    ),
-    translations: {},
-    beforeAll: undefined,
-    plugins: [],
-    ...options,
-    log: {
-      logger: i18nLogger(logOptions),
-      ...logOptions,
-    },
-  };
-
+  const store = createI18nStore(options);
   const $t = internalI18n(store);
-
-  Object.freeze(store.log);
-
-  const log = store.log.logger;
+  const { logger } = store.log;
 
   if (isInitialized) {
     throw new Error($t.initializedError);
@@ -65,17 +28,15 @@ const i18n = <T extends string | number | symbol>(
     const [file, error] = loadTranslations(store);
 
     if (error) {
-      throw new Error($t.fileError);
+      throw new Error(`${$t.fileError} @ ${options?.route}`);
     }
 
-    log($t.initSuccess(), "SUCCESS");
+    logger($t.initSuccess(), "SUCCESS");
 
     isInitialized = true;
     store.translations = JSON.parse(file!) as Record<string, any>;
 
-    store.beforeAll?.(store);
-
-    Object.freeze(store);
+    executeBeforeAll(store);
 
     return { useI18n, plugins };
   };
@@ -98,18 +59,30 @@ const i18n = <T extends string | number | symbol>(
           store.translations,
         );
 
-      if (translation && typeof translation === "string") {
-        log(translation, "MESSAGE");
-        return translation;
-      }
+      return functionProxy(
+        () => {
+          if (translation && typeof translation === "string") {
+            logger(translation, "MESSAGE");
+            return translation;
+          }
 
-      const warnMessage = `${store.locale} - ${$t.missingKey(key)}`;
+          const warnMessage = `${store.locale} - ${$t.missingKey(key)}`;
 
-      if (store.log.verbosity.includes("MESSAGE")) {
-        log(warnMessage, "CRITIC");
-      }
+          if (store.log.verbosity.includes("MESSAGE")) {
+            logger(warnMessage, "CRITIC");
+          }
 
-      return warnMessage;
+          return warnMessage;
+        },
+        {
+          before: () => {
+            store.beforeEach?.(store);
+          },
+          after: () => {
+            store.afterEach?.(store);
+          },
+        },
+      );
     };
   };
 

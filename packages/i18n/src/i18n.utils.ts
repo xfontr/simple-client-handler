@@ -2,13 +2,17 @@ import { readFileSync, readdirSync } from "fs";
 import { join, extname } from "path";
 import type {
   CustomFunction,
+  FunctionProxyOptions,
   I18nLogger,
+  I18nOptions,
   I18nStore,
   Locale,
   Locales,
+  PublicLogOptions,
   VerbosityLevels,
 } from "./i18n.types";
 import internalI18n from "./i18n.locales";
+import { DEFAULT_LOCALE } from "./i18n.configs";
 
 export const syncTryCatch = <
   R,
@@ -33,16 +37,12 @@ export const requiredLocale = (
   allowedLocales.find((locale) => selectedLocale === locale) ?? fallbackLocale;
 
 const getTranslation = (locale: Locale, route: string) =>
-  syncTryCatch<string>(
-    readFileSync,
-    join(__dirname, route, `${locale}.json`),
-    "utf8",
-  );
+  syncTryCatch<string>(readFileSync, join(route, `${locale}.json`), "utf8");
 
 const getAnyTranslation = (route: string): Locale | undefined => {
   const [translationsFolder, error] = syncTryCatch<string[]>(
     readdirSync,
-    join(__dirname, route),
+    route,
   );
 
   return error
@@ -53,9 +53,11 @@ const getAnyTranslation = (route: string): Locale | undefined => {
 };
 
 export const loadTranslations = (store: I18nStore) => {
-  const { locale, route, fallbackLocale } = store;
+  const { locale, route: rawRoute, fallbackLocale } = store;
   const { logger } = store.log;
   const $t = internalI18n(store);
+
+  const route = join(...rawRoute);
 
   const response = getTranslation(locale, route);
 
@@ -108,4 +110,68 @@ export const i18nLogger: I18nLogger = ({ enabled, loggerTool, verbosity }) => {
         );
       }
     : (): void => undefined;
+};
+
+export const createI18nStore = (options?: I18nOptions): I18nStore => {
+  const logOptions: Required<PublicLogOptions> = {
+    enabled: true,
+    verbosity: "ALL",
+    loggerTool: console.warn,
+    ...options?.log,
+  };
+
+  return {
+    autoInit: false,
+    allowedLocales: [DEFAULT_LOCALE],
+    fallbackLocale: DEFAULT_LOCALE,
+    anyFallback: false,
+    route: [__dirname, "./locales"],
+    locale: requiredLocale(
+      options?.locale ?? DEFAULT_LOCALE,
+      options?.allowedLocales ?? [DEFAULT_LOCALE],
+      options?.fallbackLocale ?? DEFAULT_LOCALE,
+    ),
+    translations: {},
+    beforeAll: undefined,
+    beforeEach: undefined,
+    afterEach: undefined,
+    rawBeforeAll: false,
+    plugins: [],
+    ...options,
+    log: {
+      logger: i18nLogger(logOptions),
+      ...logOptions,
+    },
+  };
+};
+
+export const functionProxy = <
+  T = any,
+  F extends CustomFunction<T> = CustomFunction<T>,
+>(
+  method: F,
+  { before, after }: FunctionProxyOptions = {},
+): T => {
+  before?.();
+  const result = method();
+  after?.(result);
+  return result;
+};
+
+export const executeBeforeAll = (store: I18nStore): void => {
+  functionProxy(
+    () => {
+      Object.freeze(store.log);
+      Object.freeze(store);
+    },
+    {
+      before: () => {
+        if (store.rawBeforeAll) store.beforeAll?.(store);
+      },
+      after: () => {
+        if (store.rawBeforeAll) return;
+        store.beforeAll?.(store);
+      },
+    },
+  );
 };

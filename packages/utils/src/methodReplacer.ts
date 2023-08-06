@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
-import { type CustomFunction } from "../types/Functions";
+import { type CustomFunction } from "./types/Functions";
 
 const replaceMethods = <T extends object, M extends CustomFunction>(
   methodContainer: T,

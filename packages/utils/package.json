@@ -1,14 +1,14 @@
 {
   "name": "@personal/utils",
   "description": "Personal utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "types": "index.d.ts",
   "author": "Xifré Font",
   "license": "MIT",
   "scripts": {
     "start": "node .",
-    "build": "npm ci && rimraf build && tsc && npm pack",
+    "build": "npm ci && rimraf build && tsc *.ts && tsc && npm pack",
     "dev": "clear && nodemon -q --watch src --exec node --loader ts-node/esm --inspect src/index.ts | npm run pretty-log",
     "dev:verbose": "clear && nodemon --watch src --exec node --loader ts-node/esm --inspect src/index.ts",
     "lint": "eslint \"**/*.{ts}\"",

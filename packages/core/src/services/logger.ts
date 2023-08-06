@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { pino } from "pino";
 import { replaceMethods } from "@personal/utils";
 
