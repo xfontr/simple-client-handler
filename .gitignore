@@ -3,3 +3,6 @@ build
 coverage
 ignoreMe
 *.tgz
+*.js
+*.d.ts
+*.d.ts.map
