@@ -41,6 +41,7 @@ export type I18nOptions = Partial<{
   /**
    * Inits the store when using the localization tool, if it hasn't been instantiated before.
    * If false, it will be required to manually init it.
+   *
    * @default false
    */
   autoInit: boolean;
@@ -57,23 +58,37 @@ export type I18nOptions = Partial<{
    */
   allowedLocales: Locales;
   /**
-   * If translations are not found anywhere, the tool will search for any localization file in the route.
-   * Could lead to unexpected behavior, as it will load the first found .json file, if any.
+   * If translations are not found anywhere, the tool will search for any localization file in the
+   * route. Could lead to unexpected behavior, as it will load the first found .json file, if any.
+   *
    * @default false
    */
   anyFallback: boolean;
-  route: string;
+  route: string[];
   log: PublicLogOptions;
   /**
-   * Function that will be executed once the store has been initialized, with access to the unfrozen store.
+   * Function that will be executed once the store has been initialized,
+   * with access to the unfrozen store.
    *
    * @example ({ translations }) => { console.log(`See the translations: ${translations}`) }
+   * @default undefined
    */
   beforeAll: ((store: I18nStore) => void) | undefined;
   /**
-   * List of functions that will be returned by the i18n tool itself, for the user to call whenever it requires it..
+   * **Use with caution:** If true, the beforeAll function will be executed
+   * before the store being frozen.
+   *
+   * @default false
+   */
+  rawBeforeAll: boolean;
+  beforeEach: ((store: I18nStore) => void) | undefined;
+  afterEach: ((store: I18nStore) => void) | undefined;
+  /**
+   * List of functions that will be returned by the i18n tool itself,
+   * for the user to call whenever it requires it..
    *
    * @example [({ translations }) => { console.log(`See the translations: ${translations}`) }, ...plugins]
+   * @default []
    */
   plugins: Plugin[];
 }>;
@@ -93,4 +108,9 @@ export type I18nInstance<T extends string | number | symbol> = {
     plugins: () => Record<T, Plugin>;
   };
   plugins: () => Record<T, Plugin>;
+};
+
+export type FunctionProxyOptions<T = any, R = any> = {
+  before?: CustomFunction<T>;
+  after?: (result: T) => R;
 };
