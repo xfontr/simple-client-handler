@@ -6,6 +6,7 @@ import {
   functionProxy,
   loadTranslations,
 } from "./i18n.utils";
+import { join } from "path";
 
 let isInitialized = false;
 
@@ -28,7 +29,7 @@ const i18n = <T extends string | number | symbol>(
     const [file, error] = loadTranslations(store);
 
     if (error) {
-      throw new Error(`${$t.fileError} @ ${options?.route}`);
+      throw new Error(`${$t.fileError} @ ${join(...options.route!)}`);
     }
 
     logger($t.initSuccess(), "SUCCESS");
