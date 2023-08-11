@@ -1,6 +1,5 @@
-import $t from "./i18.init";
-import logger from "./services/logger";
+import logger from "./logger.init";
 
-const { info } = logger($t("directory.home"));
+const { info } = logger(":directory.home");
 
-info($t("app.init"));
+info(":app.init");
