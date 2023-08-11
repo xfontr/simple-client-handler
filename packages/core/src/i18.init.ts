@@ -1,6 +1,6 @@
 import i18n from "@personal/i18n";
 import { LOCALES } from "./configs/constants";
-import logger from "./services/logger";
+import initLogger from "./services/logger";
 
 const $t = i18n({
   locale: "GB-en",
@@ -11,7 +11,7 @@ const $t = i18n({
   route: [__dirname, "./locales"],
   log: {
     enabled: true,
-    loggerTool: logger("I18n").warn,
+    loggerTool: initLogger()("I18n").warn,
     verbosity: ["CRITIC", "LIGHT", "SUCCESS"],
   },
   beforeAll: ({ translations }) => {
